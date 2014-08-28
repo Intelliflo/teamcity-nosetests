@@ -54,3 +54,10 @@ docs/_build/
 
 # vim stuff
 *.swp
+
+
+# virtual environments
+man
+Include
+Lib
+Scripts
