@@ -25,12 +25,23 @@ def test_escape_message_obrack():
 def test_escape_message_cbrack():
     assert_equal(escape_message("]"), "|]")
 
-def test_escape_unicode_char():
+def test_escape_message_unicode_char():
     assert_equal(escape_message("\u0394"), "|0x0394")
 
-def test_multiple_escapes():
+def test_escape_message_multiple_escapes():
     assert_equal(escape_message("[]|[']|[]"), "|[|]|||[|'|]|||[|]")
 
-def test_non_escaped():
+def test_escape_message_non_escaped():
     assert_equal(escape_message("Quick brown fox!"), "Quick brown fox!")
+
+def test_make_service_message_empty_args():
+    assert_equal(make_service_message("name"), "##teamcity[name]")
+
+def test_make_service_message_args():
+    assert_equal(make_service_message("name", arg1=2, arg2="str"), 
+            "##teamcity[name arg1='2' arg2='str']")
+
+def test_make_service_message_args_escaped():
+    assert_equal(make_service_message("name", arg1=2, arg2="str|"), 
+            "##teamcity[name arg1='2' arg2='str||']")
 
