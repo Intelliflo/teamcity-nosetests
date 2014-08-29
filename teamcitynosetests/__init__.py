@@ -1,5 +1,6 @@
 import traceback
 import operator
+import os
 from nose.plugins import Plugin
 
 def make_service_message(message_name, **kwargs):
@@ -58,7 +59,7 @@ class TeamCityOutput(Plugin):
         pass
 
     def _report(message):
-        # todo: chuck on output stream
+        pass
 
     def startContext(self, context):
         _report(make_service_message(
