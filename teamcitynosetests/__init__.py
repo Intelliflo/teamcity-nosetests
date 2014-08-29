@@ -1,7 +1,13 @@
 import traceback
 import operator
 import os
+import sys
+import logging
 from nose.plugins import Plugin
+from types import ModuleType
+
+
+log = logging.getLogger('nose.plugins.teamcityoutput')
 
 def make_service_message(message_name, **kwargs):
     """Create service message"""
@@ -39,40 +45,61 @@ def escape_message(toescape):
 
 
 def name_of_context(context):
+    if isinstance(context, ModuleType):
+        return context.__name__
     return context.__module__ + '.' + context.__class__.__name__
 
 class TeamCityOutput(Plugin):
     """Output test results as team city service messages"""
-
-    name = 'teamcity-output'
-    score = 2
-
-    def options(self, parser, env=os.environ):
-        super(TeamCityOutput, self).options(parser, env=env)
+    name = 'teamcitynosetests'
 
     def configure(self, options, conf):
-        super(TeamCityOutput, self).configure(options, conf)
+        Plugin.configure(self, options, conf)
         if not self.enabled:
             return
-    
+
     def finalize(self, result):
         pass
 
-    def _report(message):
-        pass
+    def _report(self, message):
+        self.stream.writeln(message)
+
+    def setOutputStream(self, stream):
+        self.stream = stream
+        class dummy():
+            def write(self, *arg):
+                pass
+            def writeln(self, *arg):
+                pass
+        d = dummy()
+        return d
+
+    def formatErr(self, err):
+        exctype, value, tb = err
+        return ''.join(traceback.format_exception(exctype, value, tb))
+
+    def addFailure(self, test, err):
+        self._report(make_service_message(
+            'testFailed',
+            name=test.shortDescription() or str(test),
+            message=self.formatErr(err)))
 
     def startContext(self, context):
-        _report(make_service_message(
+        self._report(make_service_message(
             'testSuiteStarted', 
             name=name_of_context(context)))
 
     def stopContext(self, context):
-        _report(make_service_message(
+        self._report(make_service_message(
             'testSuiteFinished',
             name=name_of_context(context)))
     
     def startTest(self, test):
-        pass
+        self._report(make_service_message(
+            'testStarted',
+            name=test.shortDescription() or str(test)))
 
     def stopTest(self, test):
-        pass
+        self._report(make_service_message(
+            'testFinished',
+            name=test.shortDescription() or str(test)))

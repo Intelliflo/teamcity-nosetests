@@ -5,7 +5,7 @@ except ImportError:
 
 config = {
     'name': 'teamcitynosetests',
-    'version': '0.1dev',
+    'version': '0.2dev',
     'author': 'Chris Smith',
     'author_email': 'chris.smith@intelliflo.com',
     'packages': [ 'teamcitynosetests' ],
@@ -16,7 +16,7 @@ config = {
     'license': 'Apache License, Version 2.0',
     'entry_points': {
         'nose.plugins.0.10': [
-            'teamcitynosetests = teamcitynosetests:TeamCityOutputPlugin'
+            'teamcitynosetests = teamcitynosetests:TeamCityOutput'
         ]
     },
 }
